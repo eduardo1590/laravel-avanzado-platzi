@@ -51,7 +51,7 @@ class ProductControllerTest extends TestCase
             'price' => 20000,
         ];
 
-        $response = $this->patchJson("/api/products/$product", $data);
+        $response = $this->patchJson("/api/products/$product->id", $data);
         $response->assertSuccessful();
         $response->assertHeader('content-type', 'application/json');
     }
@@ -59,7 +59,7 @@ class ProductControllerTest extends TestCase
     public function testShow(){
         $product = factory(Product::class)->create();
 
-        $response = $this->getJson("/api/products/$product");
+        $response = $this->getJson("/api/products/$product->id");
 
         $response->assertSuccessful();
         $response->assertHeader('content-type', 'application/json');
@@ -69,7 +69,7 @@ class ProductControllerTest extends TestCase
     {
         $product = factory(Product::class)->create();
 
-        $response = $this->deleteJson("/api/products/$product");
+        $response = $this->deleteJson("/api/products/$product->id");
 
         $response->assertSuccessful();
         $response->assertHeader('content-type', 'application/json');
