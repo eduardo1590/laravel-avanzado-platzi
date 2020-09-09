@@ -6,10 +6,20 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Product;
+use App\User;
+use Laravel\Sanctum\Sanctum;
 
 class ProductControllerTest extends TestCase
 {
     use RefreshDatabase;
+
+    public function setUp(): void{
+        parent::setUp();
+
+        Sanctum::actingAs(
+            factory(User::class)->create()
+        );
+    }
     /**
      * A basic feature test example.
      *

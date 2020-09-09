@@ -6,9 +6,21 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Category;
+use App\User;
+use Laravel\Sanctum\Sanctum;
 
 class CategoryControllerTest extends TestCase
 {
+    use RefreshDatabase;
+
+    public function setUp(): void{
+        parent::setUp();
+
+        Sanctum::actingAs(
+            factory(User::class)->create()
+        );
+    }
+    
     /**
      * A basic feature test example.
      *
