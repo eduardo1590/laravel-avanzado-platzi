@@ -9,5 +9,8 @@ $factory->define(Product::class, function (Faker $faker) {
     return [
         'name' => $faker->name,
         'price' => $faker->numberBetween(10000,60000),
+        'category_id' => factory(App\Category::class)->create([
+            'name' => 'Otros', 
+        ])
     ];
 });
