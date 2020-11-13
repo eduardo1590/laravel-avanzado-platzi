@@ -9,7 +9,7 @@ use Laravel\Sanctum\HasApiTokens;
 use App\Utils\CanBeRate;
 use App\Utils\CanRate;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use Notifiable, HasApiTokens, CanRate, CanBeRate;
 
