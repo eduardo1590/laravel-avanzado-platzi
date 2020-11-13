@@ -2,6 +2,8 @@
 
 namespace App\Console\Commands;
 
+use App\Notifications\NewsletterNotification;
+use App\User;
 use Illuminate\Console\Command;
 
 class SendNewsletterCommand extends Command
@@ -11,14 +13,16 @@ class SendNewsletterCommand extends Command
      *
      * @var string
      */
-    protected $signature = 'send:newsletter {emails?*}';
+    protected $signature = 'send:newsletter
+    {emails?*} : Correos Electronicos a los cuales enviar directamente
+    {--s|schedule : Si debe ser ejecutado directamente o no}';
 
     /**
      * The console command description.
      *
      * @var string
      */
-    protected $description = 'Envia un correo electronico';
+    protected $description = 'Envia un correo electronico a todos los usuarios que hayan verificado su cuenta';
 
     /**
      * Create a new command instance.
@@ -38,6 +42,7 @@ class SendNewsletterCommand extends Command
     public function handle()
     {
         $userEmails = $this->argument('emails');
+        $schedule = $this->option('schedule');
 
         $builder = User::query();
 
@@ -51,10 +56,17 @@ class SendNewsletterCommand extends Command
         if ($count) {
             $this->info("Se enviaran {$count} correos");
 
-            if ($this->confirm('¿Estas de acuerdo?')) {
+            if ($this->confirm('¿Estas de acuerdo?') || $schedule) {
+                $productQuery = Product::query();
+                $productQuery->withCount(['qualifications as average_rating' => function ($query) {
+                    $query->select(DB::raw('coalesce(avg(score),0)'));
+                }])->orderByDesc('average_rating');
+
+                $products = $productQuery->take(6)->get();
+
                 $this->output->progressStart($count);
-                $builder->each(function (User $user) {
-                    $user->notify(new NewsletterNotification());
+                $builder->each(function (User $user) use ($products) {
+                    $user->notify(new NewsletterNotification($products->toArray()));
                     $this->output->progressAdvance();
                 });
                 $this->output->progressFinish();
